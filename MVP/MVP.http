@@ -1,0 +1,46 @@
+@MVP_HostAddress = http://localhost:5111
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiVGVzenQgRWxlayIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InRlc3p0QGV4YW1wbGUuY29tIiwiZXhwIjoxNzc5MzU2NzU2LCJpc3MiOiJNVlAiLCJhdWQiOiJNVlBVc2VycyJ9.I_Fd39qpfNpDiKXcJewGyINORYcq2E3GgHE55zVCIp8
+
+### Register
+POST {{MVP_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Teszt Elek",
+  "email": "teszt@example.com",
+  "password": "Password123!",
+  "acceptTerms": true,
+  "acceptPrivacy": true
+}
+
+### Login
+POST {{MVP_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "teszt@example.com",
+  "password": "Password123!"
+}
+
+### Current user
+GET {{MVP_HostAddress}}/api/auth/me
+Authorization: Bearer {{token}}
+
+### Create project
+POST {{MVP_HostAddress}}/api/projects
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Portfólió weboldal",
+  "description": "Első projekt",
+  "startDate": "2026-06-01",
+  "endDate": "2026-06-20",
+  "dailyHours": 2,
+  "status": "planned",
+  "priority": "high"
+}
+
+### List projects
+GET {{MVP_HostAddress}}/api/projects
+Authorization: Bearer {{token}}

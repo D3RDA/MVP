@@ -1,0 +1,11 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "server=127.0.0.1;port=3306;database=planner_app;user=root;password=YOUR_PASSWORD"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  }
+}

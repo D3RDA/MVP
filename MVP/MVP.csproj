@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>9b600124-8c28-472c-9495-0b3d6c4cd05a</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3" />
+    <!--
+      Pomelo.EntityFrameworkCore.MySql 10.x még nem érhető el stabil NuGet csomagként.
+      A Pomelo 9.0.0 EF Core 9 függőségeket igényel, ezért az EF Core Design csomag is 9.0.0-n marad.
+      A projekt net10.0-t céloz, de az EF/Pomelo stack szándékosan EF Core 9 alapú, amíg nincs stabil Pomelo 10.x.
+      Ha stabil Pomelo 10.x megjelenik, együtt frissítsd: Pomelo.EntityFrameworkCore.MySql + Microsoft.EntityFrameworkCore.Design.
+    -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
+  </ItemGroup>
+
+</Project>
