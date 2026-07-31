@@ -2,6 +2,35 @@
 **/obj/
 frontend/node_modules/
 frontend/dist/
-*.user
 .vs/
+
+# --- User-specific / IDE files ---
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# --- Secrets: never commit these ---
+# Publish profiles contain deploy hostnames, usernames and saved passwords
+**/Properties/PublishProfiles/
+*.pubxml
+*.pubxml.user
+
+# App configuration containing connection strings / keys
+MVP/appsettings.json
 MVP/appsettings.Development.json
+MVP/appsettings.Production.json
+appsettings.*.json
+!appsettings.example.json
+!MVP/appsettings.Development.json.example
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Certificates and keys
+*.pfx
+*.p12
+*.pem
+*.key
