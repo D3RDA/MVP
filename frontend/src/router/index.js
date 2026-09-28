@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { isLoggedIn } from '../services/auth'
+import LandingView from '../views/LandingView.vue'
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import DashboardView from '../views/DashboardView.vue'
@@ -10,7 +11,7 @@ import TermsView from '../views/TermsView.vue'
 import PrivacyView from '../views/PrivacyView.vue'
 
 const routes = [
-  { path: '/', redirect: '/dashboard' },
+  { path: '/', component: LandingView, meta: { guest: true } },
   { path: '/login', component: LoginView, meta: { guest: true } },
   { path: '/register', component: RegisterView, meta: { guest: true } },
   { path: '/felhasznalasi-feltetelek', component: TermsView },
@@ -23,7 +24,8 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  scrollBehavior: () => ({ top: 0 })
 })
 
 router.beforeEach((to) => {

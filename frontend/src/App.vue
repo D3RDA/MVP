@@ -15,6 +15,11 @@ const user = computed(() => {
   route.fullPath;
   return getUser();
 });
+// A nyitooldal nem egy kozepre igazitott kartya, hanem teljes szelessegu lap.
+const mainClass = computed(() => {
+  if (loggedIn.value) return "content";
+  return route.path === "/" ? "public-content" : "auth-content";
+});
 
 function logout() {
   clearSession();
@@ -65,7 +70,7 @@ watch(
       <button class="logout" @click="logout">Kijelentkezés</button>
     </aside>
 
-    <main :class="loggedIn ? 'content' : 'auth-content'">
+    <main :class="mainClass">
       <RouterView :key="route.fullPath" />
     </main>
     <Toast />

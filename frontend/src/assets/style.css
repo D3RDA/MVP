@@ -847,3 +847,41 @@ button.danger-soft:hover {
   }
 }
 
+
+/* ---- Nyitooldal ---- */
+.public-content { width: 100%; min-height: 100vh; }
+.landing { max-width: 1100px; margin: 0 auto; padding: 32px 24px 64px; display: grid; gap: 44px; }
+.landing-hero { display: grid; gap: 18px; justify-items: center; text-align: center; padding-top: 20px; }
+.landing-hero h1 { margin: 0; font-size: clamp(30px, 6vw, 52px); line-height: 1.1; max-width: 800px; }
+.landing-brand { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 800; }
+.landing-brand img { width: 42px; height: 42px; }
+.landing-lead { margin: 0; max-width: 660px; font-size: clamp(16px, 2.2vw, 20px); color: var(--text-soft); }
+.landing-note { margin: 0; max-width: 560px; font-size: 14px; }
+.landing-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.landing-actions a { display: inline-flex; align-items: center; min-height: 48px; padding: 12px 22px; border-radius: 12px; font-weight: 700; }
+.landing-cta { background: var(--primary); color: var(--on-primary); }
+.landing-cta:hover { background: var(--primary-dark); }
+.landing-ghost { background: var(--secondary-bg); color: var(--secondary-text); }
+.landing-ghost:hover { background: var(--secondary-bg-hover); }
+.landing-section { display: grid; gap: 16px; }
+.landing-section > h2 { margin: 0; font-size: clamp(21px, 3vw, 26px); }
+.landing-features { grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); }
+.landing-steps { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.step { align-content: start; }
+.step-number { width: 34px; height: 34px; border-radius: 999px; display: grid; place-items: center; background: var(--badge-info-bg); color: var(--badge-info-text); font-weight: 800; }
+.landing-closing { justify-items: center; text-align: center; }
+.landing-footer { border-top: 1px solid var(--border); padding-top: 20px; display: flex; flex-wrap: wrap; gap: 10px 20px; justify-content: space-between; align-items: center; color: var(--muted); font-size: 14px; }
+.landing-footer a { text-decoration: underline; }
+.landing-section .card a { color: var(--primary); text-decoration: underline; }
+.landing-section .card a:hover { color: var(--primary-dark); }
+.preview-window { border: 1px solid var(--border); border-radius: 18px; overflow: hidden; background: var(--surface); box-shadow: var(--shadow); }
+.preview-bar { display: flex; gap: 7px; padding: 12px 14px; border-bottom: 1px solid var(--border); background: var(--surface-muted); }
+.preview-dot { width: 10px; height: 10px; border-radius: 999px; background: var(--border); }
+.preview-body { padding: 16px; display: grid; gap: 12px; }
+.preview-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; padding-bottom: 12px; border-bottom: 1px solid var(--divider); }
+.preview-row:last-child { border-bottom: 0; padding-bottom: 0; }
+
+@media (max-width: 768px) {
+  .landing { padding: 24px 16px 48px; gap: 34px; }
+  .landing-actions a { width: 100%; justify-content: center; }
+}

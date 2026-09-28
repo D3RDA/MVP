@@ -30,7 +30,7 @@ async function submit() {
 <template>
   <section class="auth-card">
     <h1>Bejelentkezés</h1>
-    <p>Lépj be a projekt- és álláskövető rendszeredbe.</p>
+    <p>Lépj be az álláskövetődbe.</p>
     <ErrorMessage :message="error" />
     <form @submit.prevent="submit" class="form">
       <label>Email<input v-model="email" type="email" required /></label>
@@ -38,5 +38,6 @@ async function submit() {
       <button :disabled="loading">{{ loading ? 'Belépés...' : 'Belépés' }}</button>
     </form>
     <p class="muted">Nincs fiókod? <RouterLink to="/register">Regisztráció</RouterLink></p>
+    <p class="muted"><RouterLink to="/">← Mi ez az alkalmazás?</RouterLink></p>
   </section>
 </template>
