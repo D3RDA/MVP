@@ -58,11 +58,9 @@ watch(
       </div>
       <nav>
         <RouterLink to="/dashboard">Dashboard</RouterLink>
-        <RouterLink to="/projects">Projektek</RouterLink>
         <RouterLink to="/jobs">Álláskövető</RouterLink>
         <RouterLink to="/job-import">Állásimport</RouterLink>
-        <RouterLink to="/calendar">Naptár</RouterLink>
-        <RouterLink to="/notes">Jegyzetek</RouterLink>
+        <RouterLink to="/companies">Cégek</RouterLink>
       </nav>
       <button class="logout" @click="logout">Kijelentkezés</button>
     </aside>
