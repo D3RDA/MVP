@@ -29,7 +29,7 @@ Egy app, ami egy dolgot jól csinál, többet ér, mint amelyik ötöt félig. A
 |---|---|
 | Backend | ASP.NET Core Web API (`/MVP`) |
 | Frontend | Vue 3 + Vite, Vue Router (`/frontend`) |
-| Adatbázis | SQL Server |
+| Adatbázis | MySQL (Pomelo EF Core provider) |
 | Auth | JWT |
 | Diagramok | Chart.js (vue-chartjs) |
 
@@ -45,7 +45,7 @@ Egy app, ami egy dolgot jól csinál, többet ér, mint amelyik ötöt félig. A
 
 - .NET SDK (ajánlott: .NET 8)
 - Node.js 18+ és npm
-- SQL Server (vagy kompatibilis SQL backend)
+- MySQL 8+ (a séma script `utf8mb4` / `AUTO_INCREMENT` szintaxist használ)
 
 ## Backend indítása
 
@@ -95,7 +95,6 @@ Amit ebből érdemes átvenni:
 - **a parancs sikere nem a művelet sikere** — utána mérni kell, nem a kimenetet elhinni
 
 Ezért van a repóban `appsettings.example.json` valódi `appsettings.json` helyett.
-
 ## Hasznos fájlok
 
 - `MVP/MVP.http` — API végpontok gyors teszteléséhez

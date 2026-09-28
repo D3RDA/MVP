@@ -135,7 +135,7 @@ const steps = [
       <h2>Mi van mögötte</h2>
       <article class="card">
         <p class="muted">
-          Vue 3 + Vite frontend, ASP.NET Core Web API backend, SQL Server adatbázis, JWT alapú
+          Vue 3 + Vite frontend, ASP.NET Core Web API backend, MySQL adatbázis, JWT alapú
           hitelesítés. A sötét mód a rendszered beállítását követi, nincs kapcsolgatni való.
         </p>
         <p class="muted">
