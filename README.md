@@ -1,23 +1,37 @@
-# MVP Planner App
+# MVP for You — álláskövető
 
-Ez a repository egy **planner / productivity** alkalmazás MVP-je, két részből:
+> **Webalkalmazás álláspályázatok nyomon követésére: hova jelentkeztél, hol tart, mikor kell utánamenni.**
 
-- **Backend**: ASP.NET Core Web API (`/MVP`)
-- **Frontend**: Vue 3 + Vite (`/frontend`)
+Élő példány: **https://mvpforyou.tryasp.net/**
 
-## Fő funkciók
+Ez nem demó. A saját álláskeresésemet követem benne, valódi jelentkezésekkel — a funkciók azért néznek ki így, mert használat közben derült ki, mire van szükség és mire nincs.
 
-- Felhasználói regisztráció és bejelentkezés JWT auth-tal
-- Dashboard nézet
-- Feladatok kezelése
-- Jegyzetek kezelése
-- Projektek kezelése
-- Cégek kezelése
-- Állásjelentkezések kezelése
-- Naptár események kezelése
-- Terms/Privacy oldalak
+## Mit tud
 
-## Projekt struktúra
+| | |
+|---|---|
+| **Álláskövető** | jelentkezés rögzítése, státusz végigvezetése (jelentkezve → válaszra vár → interjú → ajánlat / elutasítás), jegyzetek, határidők |
+| **Állásimport** | hirdetés adatainak beemelése kézi gépelés helyett |
+| **Cégek** | céglista kapcsolattartóval, a jelentkezésekhez kötve |
+| **Dashboard** | összes / nyitott / válaszra váró jelentkezés, státusz szerinti megoszlás, legutóbbi jelentkezések |
+
+**Sötét mód**: a rendszer beállítását követi (`prefers-color-scheme`), nincs kapcsolgatni való.
+
+## Amit szándékosan nem tud
+
+Az app korábban planner volt: projekt-, feladat-, naptár- és jegyzetkezeléssel. Két hónap valódi használat után ezekből **egyet sem nyitottam meg** — 2026 szeptemberében kikerültek.
+
+Egy app, ami egy dolgot jól csinál, többet ér, mint amelyik ötöt félig. A backend controllerek egyelőre megvannak; a frontend már nem hívja őket.
+
+## Tech stack
+
+| Réteg | Technológia |
+|---|---|
+| Backend | ASP.NET Core Web API (`/MVP`) |
+| Frontend | Vue 3 + Vite, Vue Router (`/frontend`) |
+| Adatbázis | SQL Server |
+| Auth | JWT |
+| Diagramok | Chart.js (vue-chartjs) |
 
 ```text
 .
@@ -30,76 +44,66 @@ Ez a repository egy **planner / productivity** alkalmazás MVP-je, két részbő
 ## Előfeltételek
 
 - .NET SDK (ajánlott: .NET 8)
-- Node.js 18+
-- npm
-- SQL Server (vagy kompatibilis SQL backend a connection string alapján)
+- Node.js 18+ és npm
+- SQL Server (vagy kompatibilis SQL backend)
 
 ## Backend indítása
 
-1. Lépj a backend mappába:
+1. Másold le a példa konfigot és töltsd ki:
 
    ```bash
    cd MVP
+   cp appsettings.example.json appsettings.json
    ```
 
-2. Konfiguráld az `appsettings.json` fájlt (különösen a connection stringet és JWT beállításokat).
+   Kitöltendő: a connection string és a JWT beállítások.
+   Az `appsettings.json` **gitignore-olva van, és annak is kell maradnia** — lásd lent.
 
-3. Indítás:
+2. Indítás:
 
    ```bash
    dotnet run
    ```
 
-Alapértelmezett fejlesztői URL-eket a `MVP/Properties/launchSettings.json` tartalmazza.
+A fejlesztői URL-eket a `MVP/Properties/launchSettings.json` tartalmazza.
 
 ## Frontend indítása
 
-1. Lépj a frontend mappába:
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-   ```bash
-   cd frontend
-   ```
-
-2. Függőségek telepítése:
-
-   ```bash
-   npm install
-   ```
-
-3. Fejlesztői szerver indítása:
-
-   ```bash
-   npm run dev
-   ```
-
-A frontend API endpoint beállítása a `frontend/src/services/api.js` fájlban található.
+Az API végpont a `frontend/src/services/api.js` fájlban állítható.
 
 ## Build
 
-### Frontend production build
-
 ```bash
-cd frontend
-npm run build
+cd frontend && npm run build      # frontend production build
+cd MVP && dotnet publish -c Release
 ```
 
-### Backend publish (példa)
+## Biztonság
 
-```bash
-cd MVP
-dotnet publish -c Release
-```
+Ennek a repónak volt egy valódi incidense: az `appsettings.json` élő adatbázis-connection stringgel felkerült a publikus git történetbe. A jelszó rotálva lett, a történet átírva, az elárvult branch törölve, és az eredmény **friss klónnal, nem a helyi másolatból** ellenőrizve.
+
+Amit ebből érdemes átvenni:
+
+- **rotálj először, takaríts utána** — a történet átírása a hitelességet állítja helyre, nem a hozzáférést zárja le
+- a `git push --force --all` **csak a helyi branch-eket** tolja fel; a csak távolon létező branch a régi történettel együtt életben marad
+- **a parancs sikere nem a művelet sikere** — utána mérni kell, nem a kimenetet elhinni
+
+Ezért van a repóban `appsettings.example.json` valódi `appsettings.json` helyett.
 
 ## Hasznos fájlok
 
-- `MVP/MVP.http` – API endpointok gyors teszteléséhez
-- `MVP/planner_app_database.sql` – adatbázis script
-- `MVP/database_update_terms_privacy.sql` – Terms/Privacy frissítő script
+- `MVP/MVP.http` — API végpontok gyors teszteléséhez
+- `MVP/planner_app_database.sql` — adatbázis script
+- `MVP/database_update_terms_privacy.sql` — Terms/Privacy frissítő script
 
-## Megjegyzés
+## Éles használat előtt
 
-Ez egy MVP állapotú projekt, ezért éles környezetbe deploy előtt javasolt:
-
-- környezeti változókra átállítani a szenzitív beállításokat,
-- részletesebb hibakezelést és naplózást bevezetni,
-- teszteket hozzáadni (unit/integration).
+- szenzitív beállítások környezeti változóba
+- részletesebb hibakezelés és naplózás
+- unit/integration tesztek
