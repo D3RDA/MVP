@@ -16,7 +16,25 @@ const companies = ref([])
 const loading = ref(true)
 const error = ref('')
 
-const chartOptions = { responsive: true, maintainAspectRatio: false }
+// A Chart.js sajat alapszinei nem kovetik a temat, ezert a tengelyfeliratot
+// es a racsot a rendszer szinsemajabol allitjuk be, es valtaskor frissitjuk.
+const darkQuery = window.matchMedia('(prefers-color-scheme: dark)')
+const isDark = ref(darkQuery.matches)
+darkQuery.addEventListener('change', (event) => { isDark.value = event.matches })
+
+const chartOptions = computed(() => {
+  const label = isDark.value ? '#b4c0d6' : '#475569'
+  const grid = isDark.value ? 'rgba(255, 255, 255, .08)' : 'rgba(15, 23, 42, .08)'
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: label } } },
+    scales: {
+      x: { ticks: { color: label }, grid: { color: grid } },
+      y: { ticks: { color: label }, grid: { color: grid } }
+    }
+  }
+})
 
 const jobChartData = computed(() => {
   const keys = Object.keys(jobStatusLabels)
