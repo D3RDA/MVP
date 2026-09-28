@@ -98,8 +98,26 @@ if (app.Environment.IsDevelopment())
 // alapból http://localhost:5173-ról fut, a backend pedig http://localhost:5111-en.
 if (!app.Environment.IsDevelopment())
 {
+    // A HSTS-t csak eles kornyezetben kapcsoljuk be: fejlesztesnel a bongeszo
+    // "ragadna" a localhost HTTPS-en, es utana a http-s dev szerver sem jonne be.
+    app.UseHsts();
     app.UseHttpsRedirection();
 }
+
+// Biztonsagi fejlecek. Ez egy JSON API, nem jelenit meg semmit, ezert
+// a legszigorubb ertekeket birja el.
+app.Use(async (context, next) =>
+{
+    var headers = context.Response.Headers;
+    headers["X-Content-Type-Options"] = "nosniff";
+    headers["X-Frame-Options"] = "DENY";
+    headers["Referrer-Policy"] = "no-referrer";
+    headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=(), payment=()";
+    // Egy API valasza sosem tolt be scriptet, kepet vagy stilust, es sosem
+    // kerul iframe-be - igy a default-src 'none' nem tor el semmit.
+    headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'; base-uri 'none'";
+    await next();
+});
 
 app.UseRouting();
 app.UseCors("Frontend");
