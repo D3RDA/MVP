@@ -21,6 +21,15 @@ const deleteTarget = ref(null)
 const statusFilter = ref('')
 const companyFilter = ref('')
 const search = ref('')
+const dateField = ref('applicationDate')
+const dateFrom = ref('')
+const dateTo = ref('')
+const datePreset = ref('')
+
+const dateFieldLabels = {
+  applicationDate: 'jelentkezési',
+  interviewDateTime: 'interjú'
+}
 const viewMode = ref(localStorage.getItem('jobs_view_mode') || 'list')
 const showCreateForm = ref(false)
 const expandedJobId = ref(null)
@@ -35,14 +44,107 @@ const kanbanColumns = [
 ]
 const statusFlow = ['applied', 'waiting_response', 'interview_scheduled', 'first_interview', 'second_interview', 'offer_received', 'closed']
 
+// A datumokat helyi ido szerinti YYYY-MM-DD kulcsra hozzuk, hogy a szoveges
+// osszehasonlitas is helyes legyen, es ne csusszon el idozona miatt egy nappal.
+function dateKey(value) {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+}
+
+const dateRangeActive = computed(() => Boolean(dateFrom.value || dateTo.value))
+
+function matchesDateRange(job) {
+  if (!dateRangeActive.value) return true
+  const key = dateKey(job[dateField.value])
+  if (!key) return false
+  if (dateFrom.value && key < dateFrom.value) return false
+  if (dateTo.value && key > dateTo.value) return false
+  return true
+}
+
 const filteredJobs = computed(() => jobs.value.filter((job) => {
   const q = search.value.trim().toLowerCase()
   const matchesText = !q || [job.companyName, job.positionTitle, job.location, job.website, job.contactName, job.contactEmail, job.contactPhone, job.salaryRange, job.experienceNotes, job.nextStep]
     .some((value) => String(value || '').toLowerCase().includes(q))
   const matchesStatus = !statusFilter.value || job.status === statusFilter.value
   const matchesCompany = !companyFilter.value || job.companyId === Number(companyFilter.value)
-  return matchesText && matchesStatus && matchesCompany
+  return matchesText && matchesStatus && matchesCompany && matchesDateRange(job)
 }))
+
+// Ha datumra szurunk, a kitoltetlen datumu rekordok eltunnek. Ezt kimondjuk,
+// hogy ne ugy tunjon, mintha adat veszett volna el.
+const hiddenForMissingDate = computed(() => {
+  if (!dateRangeActive.value) return 0
+  return jobs.value.filter((job) => !dateKey(job[dateField.value])).length
+})
+
+const anyFilterActive = computed(() =>
+  Boolean(search.value || statusFilter.value || companyFilter.value || dateFrom.value || dateTo.value))
+
+function toInputDate(date) {
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+}
+
+const datePresets = [
+  { key: '7', label: 'Utolsó 7 nap' },
+  { key: '30', label: 'Utolsó 30 nap' },
+  { key: '90', label: 'Utolsó 90 nap' },
+  { key: 'thisMonth', label: 'Ez a hónap' },
+  { key: 'lastMonth', label: 'Előző hónap' },
+  { key: 'thisYear', label: 'Ez az év' }
+]
+
+function computeRange(key) {
+  const today = new Date()
+  let from
+  let to = today
+  if (key === 'thisMonth') {
+    from = new Date(today.getFullYear(), today.getMonth(), 1)
+  } else if (key === 'lastMonth') {
+    from = new Date(today.getFullYear(), today.getMonth() - 1, 1)
+    to = new Date(today.getFullYear(), today.getMonth(), 0)
+  } else if (key === 'thisYear') {
+    from = new Date(today.getFullYear(), 0, 1)
+  } else {
+    from = new Date(today)
+    from.setDate(from.getDate() - (Number(key) - 1))
+  }
+  return { from: toInputDate(from), to: toInputDate(to) }
+}
+
+function applyPreset(key) {
+  // Ugyanarra a gombra ujra kattintva a szuro kikapcsol.
+  if (datePreset.value === key) {
+    datePreset.value = ''
+    dateFrom.value = ''
+    dateTo.value = ''
+    return
+  }
+  const range = computeRange(key)
+  datePreset.value = key
+  dateFrom.value = range.from
+  dateTo.value = range.to
+}
+
+function clearFilters() {
+  search.value = ''
+  statusFilter.value = ''
+  companyFilter.value = ''
+  datePreset.value = ''
+  dateFrom.value = ''
+  dateTo.value = ''
+}
+
+// Ha kezzel irja at a datumot, a gyorsszuro kijelolese mar nem igaz ra.
+watch([dateFrom, dateTo], ([from, to]) => {
+  if (!datePreset.value) return
+  const range = computeRange(datePreset.value)
+  if (range.from !== from || range.to !== to) datePreset.value = ''
+})
 
 function emptyForm() {
   return {
@@ -257,6 +359,32 @@ onMounted(load)
       <label>Cég<select v-model="companyFilter"><option value="">Összes cég</option><option v-for="company in companies" :key="company.id" :value="company.id">{{ company.name }}</option></select></label>
       <div class="segmented"><button :class="{ active: viewMode === 'list' }" type="button" @click="viewMode = 'list'">Lista</button><button :class="{ active: viewMode === 'kanban' }" type="button" @click="viewMode = 'kanban'">Kanban</button></div>
     </div>
+
+    <div class="toolbar card compact-card date-toolbar">
+      <label>Időszak alapja<select v-model="dateField">
+        <option value="applicationDate">Jelentkezés dátuma</option>
+        <option value="interviewDateTime">Interjú időpontja</option>
+      </select></label>
+      <label>Ettől<input type="date" v-model="dateFrom" /></label>
+      <label>Eddig<input type="date" v-model="dateTo" /></label>
+      <div class="chip-row">
+        <button
+          v-for="preset in datePresets"
+          :key="preset.key"
+          type="button"
+          :class="{ active: datePreset === preset.key }"
+          @click="applyPreset(preset.key)"
+        >{{ preset.label }}</button>
+      </div>
+    </div>
+
+    <p class="muted filter-summary">
+      <span><strong>{{ filteredJobs.length }}</strong> / {{ jobs.length }} jelentkezés látszik.</span>
+      <span v-if="hiddenForMissingDate > 0">
+        {{ hiddenForMissingDate }} jelentkezésnél nincs kitöltve a {{ dateFieldLabels[dateField] }} dátum, ezért időszakra szűrve nem jelenik meg.
+      </span>
+      <button v-if="anyFilterActive" type="button" class="secondary small-button" @click="clearFilters">Szűrők törlése</button>
+    </p>
 
     <LoadingBox v-if="loading" />
     <EmptyState v-else-if="filteredJobs.length === 0" title="Nincs megjeleníthető jelentkezés" message="Hozd létre az első állásjelentkezésedet, vagy módosítsd a szűrőket." action-text="Új jelentkezés" @action="scrollToId('new-job')" />
