@@ -95,6 +95,27 @@ Amit ebből érdemes átvenni:
 - **a parancs sikere nem a művelet sikere** — utána mérni kell, nem a kimenetet elhinni
 
 Ezért van a repóban `appsettings.example.json` valódi `appsettings.json` helyett.
+
+**A teljes incidensjelentés** (angolul, mert ez a rész nem csak nekem szól):
+[`docs/SECURITY-INCIDENT-2026-07.md`](docs/SECURITY-INCIDENT-2026-07.md) — mi történt,
+mit csináltam, mit hagytam ki, és mit ellenőriztem a végén.
+A biztonsági bejelentés útja és a jelenlegi védelmi intézkedések:
+[`SECURITY.md`](SECURITY.md).
+
+### Bejelentkezés-védelem
+
+| Intézkedés | Érték |
+|---|---|
+| Rate limit a `login` és `register` végponton | 5 kérés / perc / IP |
+| Fiókzárolás sikertelen belépések után | 5 próbálkozás → 15 perc zárolás |
+| Felhasználó-felderítés elleni időzítés-kiegyenlítés | ismeretlen email is végigfut egy jelszó-ellenőrzésen |
+
+A kettő együtt véd: a rate limit **IP szerint** korlátoz, a zárolás **fiók szerint**.
+Aki sok IP-ről próbálkozik ugyanarra a fiókra, azt csak a zárolás fogja meg; aki
+sok fiókot próbál egy IP-ről, azt csak a rate limit.
+
+Az adatbázis-sémához tartozó bővítés: `MVP/database_update_login_lockout.sql`.
+
 ## Hasznos fájlok
 
 - `MVP/MVP.http` — API végpontok gyors teszteléséhez
