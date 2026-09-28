@@ -14,7 +14,10 @@ CREATE TABLE users (
     accepted_terms_version VARCHAR(20) NULL,
     accepted_privacy_version VARCHAR(20) NULL,
     terms_accepted_at DATETIME NULL,
-    privacy_accepted_at DATETIME NULL
+    privacy_accepted_at DATETIME NULL,
+    failed_login_attempts INT NOT NULL DEFAULT 0,
+    last_failed_login_at DATETIME NULL,
+    lockout_ends_at DATETIME NULL
 );
 
 CREATE TABLE projects (

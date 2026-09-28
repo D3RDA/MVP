@@ -2,6 +2,11 @@ export function getErrorMessage(error, fallback = 'Ismeretlen hiba történt.') 
   if (error.response) {
     const data = error.response.data
 
+    // A rate limiter ures torzzsel valaszol, ezert a statuszkodbol kell erteni.
+    if (error.response.status === 429) {
+      return 'Túl sok próbálkozás rövid idő alatt. Várj egy percet, és próbáld újra.'
+    }
+
     if (typeof data === 'string') return data
 
     if (data?.title && data?.errors) {

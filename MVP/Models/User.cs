@@ -13,6 +13,12 @@ public class User
     public DateTime? TermsAcceptedAt { get; set; }
     public DateTime? PrivacyAcceptedAt { get; set; }
 
+    // Fiókzárolás sikertelen bejelentkezések után. A számláló minden sikeres
+    // belépéskor nullázódik, a zárolás lejárta után magától feloldódik.
+    public int FailedLoginAttempts { get; set; }
+    public DateTime? LastFailedLoginAt { get; set; }
+    public DateTime? LockoutEndsAt { get; set; }
+
     public ICollection<Project> Projects { get; set; } = new List<Project>();
     public ICollection<Company> Companies { get; set; } = new List<Company>();
     public ICollection<CalendarEvent> CalendarEvents { get; set; } = new List<CalendarEvent>();

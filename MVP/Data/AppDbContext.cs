@@ -36,6 +36,9 @@ public class AppDbContext : DbContext
             entity.Property(e => e.AcceptedPrivacyVersion).HasColumnName("accepted_privacy_version").HasMaxLength(20);
             entity.Property(e => e.TermsAcceptedAt).HasColumnName("terms_accepted_at");
             entity.Property(e => e.PrivacyAcceptedAt).HasColumnName("privacy_accepted_at");
+            entity.Property(e => e.FailedLoginAttempts).HasColumnName("failed_login_attempts").HasDefaultValue(0);
+            entity.Property(e => e.LastFailedLoginAt).HasColumnName("last_failed_login_at");
+            entity.Property(e => e.LockoutEndsAt).HasColumnName("lockout_ends_at");
         });
 
         modelBuilder.Entity<Project>(entity =>
