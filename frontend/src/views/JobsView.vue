@@ -34,6 +34,7 @@ const viewMode = ref(localStorage.getItem('jobs_view_mode') || 'list')
 const showCreateForm = ref(false)
 const expandedJobId = ref(null)
 const form = ref(emptyForm())
+const duplicateAcknowledged = ref(false)
 
 const kanbanColumns = [
   { key: 'new', label: 'Jelentkezve', statuses: ['applied'] },
@@ -166,6 +167,37 @@ function emptyForm() {
   }
 }
 
+// Osszehasonlitas elott levesszuk az ekezetet, a tobbszoros szokozt es a kis/nagybetut,
+// hogy az "Acme Kft." es az "acme  kft." ugyanannak szamitson.
+function normalizeText(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
+}
+
+const duplicateMatches = computed(() => {
+  const company = normalizeText(form.value.companyName)
+  const position = normalizeText(form.value.positionTitle)
+  if (!company || !position) return []
+  return jobs.value.filter((job) =>
+    normalizeText(job.companyName) === company && normalizeText(job.positionTitle) === position)
+})
+
+// Ha atirja a ceget vagy a poziciot, a korabbi "tudom, megis" dontes mar nem ervenyes.
+watch(
+  () => [form.value.companyName, form.value.positionTitle],
+  () => { duplicateAcknowledged.value = false }
+)
+
+function formatDay(value) {
+  if (!value) return 'nincs dátum'
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? 'nincs dátum' : date.toLocaleDateString('hu-HU')
+}
+
 function jobsByColumn(column) {
   return filteredJobs.value.filter((job) => column.statuses.includes(job.status))
 }
@@ -187,10 +219,17 @@ async function load() {
 
 async function createJob() {
   error.value = ''
+  // Figyelmeztetes, nem tiltas: elsore megall, masodik kattintasra menti.
+  if (duplicateMatches.value.length > 0 && !duplicateAcknowledged.value) {
+    duplicateAcknowledged.value = true
+    toast('Erre a cég + pozíció párosra már van jelentkezésed.')
+    return
+  }
   saving.value = true
   try {
     await api.post('/jobapplications/with-company', cleanWithCompany(form.value))
     form.value = emptyForm()
+    duplicateAcknowledged.value = false
     showCreateForm.value = false
     toast('Jelentkezés sikeresen mentve ✓')
     await load()
@@ -349,6 +388,16 @@ onMounted(load)
           </div>
         </fieldset>
 
+        <div v-if="duplicateMatches.length > 0" class="duplicate-warning">
+          <strong>Erre a cégre és pozícióra már jelentkeztél.</strong>
+          <div v-for="job in duplicateMatches" :key="job.id" class="duplicate-row">
+            <span>{{ job.companyName }} — {{ job.positionTitle }}</span>
+            <span>{{ formatDay(job.applicationDate) }}</span>
+            <StatusBadge :value="job.status" />
+          </div>
+          <span v-if="duplicateAcknowledged">Ha szándékos, nyomd meg újra a mentést.</span>
+          <span v-else>Ez csak figyelmeztetés — a mentés nincs letiltva.</span>
+        </div>
         <button :disabled="saving">{{ saving ? 'Mentés...' : 'Jelentkezés mentése' }}</button>
       </form>
     </article>

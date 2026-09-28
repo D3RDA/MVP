@@ -894,3 +894,8 @@ button.danger-soft:hover {
   .landing { padding: 24px 16px 48px; gap: 34px; }
   .landing-actions a { width: 100%; justify-content: center; }
 }
+
+/* ---- Duplikatum-figyelmeztetes ---- */
+.duplicate-warning { background: var(--badge-warn-bg); color: var(--badge-warn-text); border-radius: 14px; padding: 14px; display: grid; gap: 10px; font-size: 14px; }
+.duplicate-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.duplicate-row span:first-child { font-weight: 700; }
